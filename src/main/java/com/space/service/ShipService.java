@@ -14,5 +14,6 @@ public interface ShipService {
     Ship updateShip(Ship ship);
     void deleteShipById(Long id);
     Ship getShipById(Long id);
-    Long shipCount();
+    boolean existById(Long id);
+//    Long shipCount();
 }

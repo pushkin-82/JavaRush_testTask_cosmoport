@@ -1,9 +1,11 @@
 package com.space.controller;
 
+import com.space.exceptions.ShipNotFoundException;
 import com.space.model.Ship;
 import com.space.model.ShipType;
 import com.space.service.ShipService;
-import com.space.service.Specifications;
+import com.space.utils.Specifications;
+import com.space.utils.ValidateData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,33 +50,6 @@ public class ShipController {
         return service.getAllShips(specification, pageable).getContent();
     }
 
-    @RequestMapping(path = "/ships", method = RequestMethod.POST)
-    @ResponseBody
-    public Ship createShip() {
-//        return service.create();
-        return null;
-    }
-
-
-    @RequestMapping(path = "/ships/{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public Ship getShip(@PathVariable long id) {
-        return service.getShipById(id);
-    }
-
-    @RequestMapping(path = "/ships/{id}", method = RequestMethod.DELETE)
-    @ResponseBody
-    public void delete(@PathVariable long id) {
-        service.deleteShipById(id);
-    }
-
-    @RequestMapping(path = "/ships/{id}", method = RequestMethod.POST)
-    @ResponseBody
-    public Ship update(@PathVariable long id) {
-//        return service.update(id);
-        return null;
-    }
-
     @GetMapping(path = "/ships/count")
     @ResponseStatus(HttpStatus.OK)
     public long getShipsCount(
@@ -96,6 +71,39 @@ public class ShipController {
 
         return service.getAllShips(specification).size();
     }
+
+
+    @RequestMapping(path = "/ships", method = RequestMethod.POST)
+    @ResponseBody
+    public Ship createShip() {
+//        return service.create();
+        return null;
+    }
+
+
+    @GetMapping(path = "/ships/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Ship getShip(@PathVariable long id) {
+        ValidateData.validateId(id);
+        if (!service.existById(id)) {
+            throw new ShipNotFoundException();
+        }
+        return service.getShipById(id);
+    }
+
+    @RequestMapping(path = "/ships/{id}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public void delete(@PathVariable long id) {
+        service.deleteShipById(id);
+    }
+
+    @RequestMapping(path = "/ships/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    public Ship update(@PathVariable long id) {
+//        return service.update(id);
+        return null;
+    }
+
 
 
 }

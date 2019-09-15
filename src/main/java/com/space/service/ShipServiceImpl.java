@@ -2,6 +2,7 @@ package com.space.service;
 
 import com.space.model.Ship;
 import com.space.repository.ShipRepository;
+import com.space.utils.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,18 +10,17 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 @Service
 public class ShipServiceImpl implements ShipService {
 
+    public ShipRepository getShipRepository() {
+        return shipRepository;
+    }
+
     @Autowired
-    ShipRepository shipRepository;
+    private ShipRepository shipRepository;
 
     @Override
     @Transactional
@@ -37,7 +37,7 @@ public class ShipServiceImpl implements ShipService {
     @Override
     @Transactional
     public Ship save(Ship ship) {
-        Double rating = calculateRating(ship.getProdDate(), ship.getSpeed(), ship.isUsed());
+        Double rating = Helper.calculateRating(ship.getProdDate(), ship.getSpeed(), ship.isUsed());
         ship.setRating(rating);
 
         return shipRepository.saveAndFlush(ship);
@@ -62,19 +62,14 @@ public class ShipServiceImpl implements ShipService {
     }
 
     @Override
-    public Long shipCount() {
-        return shipRepository.count();
+    public boolean existById(Long id) {
+        return shipRepository.existsById(id);
     }
 
-    private Double calculateRating(Date prodDate, Double speed, Boolean isUsed) {
-        double coef = !isUsed ? 1.0 : 0.5;
-        Calendar calendar = new GregorianCalendar();
-        calendar.setTime(prodDate);
-        int prodYear = calendar.get(Calendar.YEAR);
-        double rating = 80 * speed * coef / (Ship.CURRENT_YEAR - prodYear + 1);
+//    @Override
+//    public Long shipCount() {
+//        return shipRepository.count();
+//    }
 
-        BigDecimal roundRating = new BigDecimal(rating).setScale(2, RoundingMode.HALF_UP);
 
-        return roundRating.doubleValue();
-    }
 }

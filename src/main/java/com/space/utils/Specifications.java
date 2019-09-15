@@ -1,4 +1,4 @@
-package com.space.service;
+package com.space.utils;
 
 import com.space.model.Ship;
 import com.space.model.ShipType;
