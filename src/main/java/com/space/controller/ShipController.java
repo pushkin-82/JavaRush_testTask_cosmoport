@@ -75,10 +75,26 @@ public class ShipController {
         return null;
     }
 
-    @RequestMapping(path = "/ships/count", method = RequestMethod.GET)
-    @ResponseBody
-    public long getShipsCount() {
-        return service.shipCount();
+    @GetMapping(path = "/ships/count")
+    @ResponseStatus(HttpStatus.OK)
+    public long getShipsCount(
+            @RequestParam( value = "name", required = false) String name,
+            @RequestParam( value = "planet", required = false) String planet,
+            @RequestParam( value = "shipType", required = false) ShipType shipType,
+            @RequestParam( value = "after", required = false) Long after,
+            @RequestParam( value = "before", required = false) Long before,
+            @RequestParam( value = "isUsed", required = false) Boolean isUsed,
+            @RequestParam( value = "minSpeed", required = false) Double minSpeed,
+            @RequestParam( value = "maxSpeed", required = false) Double maxSpeed,
+            @RequestParam( value = "minCrewSize", required = false) Integer minCrewSize,
+            @RequestParam( value = "maxCrewSize", required = false) Integer maxCrewSize,
+            @RequestParam( value = "minRating", required = false) Double minRating,
+            @RequestParam( value = "maxRating", required = false) Double maxRating
+    ) {
+        Specification<Ship> specification = Specifications.getAllShipsSpecification(name, planet, shipType,
+                after, before, isUsed, minSpeed, maxSpeed, minCrewSize, maxCrewSize, minRating, maxRating);
+
+        return service.getAllShips(specification).size();
     }
 
 
