@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -73,11 +74,31 @@ public class ShipController {
     }
 
 
-    @RequestMapping(path = "/ships", method = RequestMethod.POST)
+    @PostMapping(path = "/ships")
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Ship createShip() {
-//        return service.create();
-        return null;
+    public Ship createShip(@RequestBody Ship newShip) {
+        ValidateData.validateCreateShipParams(newShip);
+
+        String name = newShip.getName();
+        String planet = newShip.getPlanet();
+        ShipType shipType = newShip.getShipType();
+        Date prodDate = newShip.getProdDate();
+        Boolean isUsed = newShip.isUsed();
+        Double speed = newShip.getSpeed();
+        Integer crewSize = newShip.getCrewSize();
+
+        Ship ship;
+
+        if (isUsed != null) {
+            ship = new Ship(name, planet, shipType, prodDate, isUsed, speed, crewSize);
+        } else {
+            ship = new Ship(name, planet, shipType, prodDate, speed, crewSize);
+        }
+
+        service.save(ship);
+
+        return ship;
     }
 
 
@@ -91,17 +112,54 @@ public class ShipController {
         return service.getShipById(id);
     }
 
-    @RequestMapping(path = "/ships/{id}", method = RequestMethod.DELETE)
-    @ResponseBody
+    @DeleteMapping(path = "/ships/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable long id) {
+        ValidateData.validateId(id);
+        if (!service.existById(id)) {
+            throw new ShipNotFoundException();
+        }
         service.deleteShipById(id);
     }
 
-    @RequestMapping(path = "/ships/{id}", method = RequestMethod.POST)
+    @PostMapping(path = "/ships/{id}")
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Ship update(@PathVariable long id) {
-//        return service.update(id);
-        return null;
+    public Ship update(@PathVariable long id, @RequestBody Ship ship) {
+        ValidateData.validateId(id);
+        if (!service.existById(id)) {
+            throw new ShipNotFoundException();
+        }
+
+        ValidateData.validateUpdateShipParams(ship);
+
+        Ship updatedShip = service.getShipById(id);
+
+        if (ship.getName() != null) {
+            updatedShip.setName(ship.getName());
+        }
+        if (ship.getPlanet() != null) {
+            updatedShip.setPlanet(ship.getPlanet());
+        }
+        if (ship.getShipType() != null) {
+            updatedShip.setShipType(ship.getShipType());
+        }
+        if (ship.getProdDate() != null) {
+            updatedShip.setProdDate(ship.getProdDate());
+        }
+        if (ship.isUsed() != null) {
+            updatedShip.setUsed(ship.isUsed());
+        }
+        if (ship.getSpeed() != null) {
+            updatedShip.setSpeed(ship.getSpeed());
+        }
+        if (ship.getCrewSize() != null) {
+            updatedShip.setCrewSize(ship.getCrewSize());
+        }
+
+        service.save(updatedShip);
+
+        return updatedShip;
     }
 
 

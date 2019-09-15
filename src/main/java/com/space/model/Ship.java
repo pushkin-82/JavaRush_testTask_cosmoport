@@ -10,6 +10,7 @@ import java.util.Objects;
 @Table(name = "ship")
 public class Ship {
     public static final int CURRENT_YEAR = 3019;
+    public static final int INITIAL_YEAR = 2800;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
