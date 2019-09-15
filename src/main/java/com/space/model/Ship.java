@@ -1,11 +1,15 @@
 package com.space.model;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "ship")
 public class Ship {
+    public static final int CURRENT_YEAR = 3019;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,9 +23,11 @@ public class Ship {
     private String planet;
 
     @Column(name = "shipType")
+    @Enumerated(EnumType.STRING)
     private ShipType shipType;
 
     @Column(name = "prodDate")
+    @Temporal(TemporalType.DATE)
     private Date prodDate;
 
     @Column(name = "isUsed")
@@ -40,7 +46,7 @@ public class Ship {
     }
 
     public Ship(String name, String planet, ShipType shipType, Date prodDate,
-                Boolean isUsed, Double speed, Integer crewSize, Double rating) {
+                Boolean isUsed, Double speed, Integer crewSize) {
         this.name = name;
         this.planet = planet;
         this.shipType = shipType;
@@ -48,8 +54,18 @@ public class Ship {
         this.isUsed = isUsed;
         this.speed = speed;
         this.crewSize = crewSize;
-        this.rating = rating;
     }
+
+    public Ship(String name, String planet, ShipType shipType, Date prodDate, Double speed, Integer crewSize) {
+        this.name = name;
+        this.planet = planet;
+        this.shipType = shipType;
+        this.prodDate = prodDate;
+        this.isUsed = false;
+        this.speed = speed;
+        this.crewSize = crewSize;
+    }
+
 
     public Long getId() {
         return id;
@@ -91,7 +107,7 @@ public class Ship {
         this.prodDate = prodDate;
     }
 
-    public Boolean getUsed() {
+    public Boolean isUsed() {
         return isUsed;
     }
 
@@ -121,5 +137,40 @@ public class Ship {
 
     public void setRating(Double rating) {
         this.rating = rating;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ship ship = (Ship) o;
+        return name.equals(ship.name) &&
+                planet.equals(ship.planet) &&
+                shipType == ship.shipType &&
+                prodDate.equals(ship.prodDate) &&
+                isUsed.equals(ship.isUsed) &&
+                speed.equals(ship.speed) &&
+                crewSize.equals(ship.crewSize);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, planet, shipType, prodDate, isUsed, speed, crewSize);
+    }
+
+    @Override
+    public String toString() {
+        return "Ship{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", planet='" + planet + '\'' +
+                ", shipType=" + shipType +
+                ", prodDate=" + prodDate +
+                ", isUsed=" + isUsed +
+                ", speed=" + speed +
+                ", crewSize=" + crewSize +
+                ", rating=" + rating +
+                '}';
     }
 }
